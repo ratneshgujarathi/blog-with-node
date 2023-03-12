@@ -8,15 +8,15 @@ export const registerUser = asyncHandler(async (req, res) => {
     const { fullName, email, password } = req.body;
     try {
         if (!fullName || !email || !password){
-            throw new Error('REQUIRED_FIELD')
+            throw new Error('RequiredFieldError')
         }
         if (password.length < 8){
-            throw new Error('INCORRECT_PASSWORD_LENGTH')
+            throw new Error('IncorrectPasswordLengthError')
         }
         const userExists = await db.collection('Users').findOne({email});
         // console.log(userExists);
         if(userExists){
-            throw new Error('ALREADY_EXISTS')
+            throw new Error('AlreadyExistsError')
         }
         const hashedPassword = authUtils.generateHash(password);
         const result = await db.collection('Users').insertOne({'full_name': fullName, "email": email, 'password': hashedPassword});
@@ -34,19 +34,19 @@ export const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     try {
         if (!email || !password){
-            throw new Error('REQUIRED_FIELD')
+            throw new Error('RequiredFieldError')
         }
         if (password.length < 8){
-            throw new Error('INCORRECT_PASSWORD_LENGTH')
+            throw new Error('IncorrectPasswordLengthError')
         }
         const userExists = await db.collection('Users').findOne({email});
         console.log(userExists);
         if(!userExists){
-            throw new Error('USER_NOT_FOUND')
+            throw new Error('UserNotFoundError')
         }
         const verifiedUser = authUtils.verifyHash(password, userExists.password);
         if (!verifiedUser){
-            throw new Error('INCORRECT_PASSWORD');
+            throw new Error('IncorrectPasswordError');
         }
         const token = authUtils.generateToken({'id': userExists._id, 'email': userExists.email, 'fullName': userExists.fullName});
         const {status_code, response} = new SuccessResponse({"result": {'token': token }})
@@ -63,7 +63,7 @@ export const getUser = asyncHandler(async (req, res) => {
     try {
         const user = await db.collection('Users').find({'_id': new ObjectId(id)}).project({'password': 0}).toArray();
         if(!user){
-            throw new Error('NOT_FOUND')
+            throw new Error('NotFoundError')
         }
         const {status_code, response} = new SuccessResponse({'users': user });
         res.status(status_code).send(response);

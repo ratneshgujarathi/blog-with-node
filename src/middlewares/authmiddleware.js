@@ -6,7 +6,7 @@ export function authMiddleware(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1];
     try {
         if (!token) {
-            throw new Error('UNAUTHORIZED');
+            throw new Error('UnauthorizedError');
         }
         jwt.verify(token, conf.SECRET_KEY, (err, decoded) => {
             if (err) {

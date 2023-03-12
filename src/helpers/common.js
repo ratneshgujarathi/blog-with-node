@@ -20,11 +20,11 @@ export function updateCommonFields(req){
 }
 
 export function paginationFilterPost(data, pageSize=ITEM_PER_PAGE, pageNumber=PAGE_NUMBER){    
-    let limit = 'limit' in data? int(data.limit): pageSize;
+    let limit = 'limit' in data? Number(data.limit): pageSize;
     limit = limit < 0 ? pageSize : limit;
-    let offset = 'page' in data? (int(data.page)-1) * limit: (pageNumber-1) * limit;
+    let offset = 'page' in data? (Number(data.page)-1) * limit: (pageNumber-1) * limit;
     offset = offset < 0 ? pageNumber : offset;
-    let page = 'page' in data? int(data.page): pageNumber;
+    let page = 'page' in data? Number(data.page): pageNumber;
     return {limit, offset, page}
 }
 
